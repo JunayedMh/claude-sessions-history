@@ -1,0 +1,28 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    # Both OSes on purpose: serve.py has a Windows-only branch (it refuses to
+    # share a port, because SO_REUSEADDR would otherwise let two servers listen
+    # at once and serve stale data). Only a Windows runner exercises it.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: The zero-dependency check users actually run
+        run: python serve.py --selftest
+
+      - run: pip install -r requirements-dev.txt
+
+      - run: python -m pytest -v

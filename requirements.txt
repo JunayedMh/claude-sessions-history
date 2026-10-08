@@ -1,0 +1,2 @@
+# Test-only. The tool itself installs nothing.
+pytest>=7
